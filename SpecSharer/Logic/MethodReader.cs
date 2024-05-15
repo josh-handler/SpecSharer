@@ -21,6 +21,9 @@ namespace SpecSharer.Logic
 
         private string bindingRegex = "\\[(Given|When|Then)(\\(@\".*\"\\))\\]";
 
+        public MethodReader() { }
+
+
         public string GetFilePath() { return filePath; }
 
         public bool SetFilePath(string path)
@@ -29,15 +32,35 @@ namespace SpecSharer.Logic
             return File.Exists(filePath);
         }
 
-    
-        public Dictionary<string, string> MapMethodsToBindings(string path)
+        public BindingsData processBindingsFile()
+        {
+            BindingsData data = new BindingsData();
+
+            string csFileContent = File.ReadAllText(filePath);
+
+            Dictionary<string, string> bodies;
+            Dictionary<string, string> modifiers;
+            Dictionary<string, List<string>> parameters;
+
+            ExtractMethodsAndBodies(csFileContent, out bodies, out modifiers, out parameters);
+            data.Methods = bodies.Keys.ToList();
+            data.Bodies = bodies;
+            data.Modifiers = modifiers;
+            data.Parameters = parameters;
+
+            data.Bindings = MapMethodsToBindings(csFileContent);
+
+            return data;
+        }
+
+        private Dictionary<string, string> MapMethodsToBindings(string csFileContent)
         {
             Dictionary<string, string> mappedMethodsAndBindings = new Dictionary<string, string>();
             string currentLine = "";
             //Chose the 'using' syntax to ensure the stream reader is disposed of promptly rather than waiting for the garbage collector
-            using (StreamReader sr = new StreamReader(filePath)) 
-            { 
-                while (!sr.EndOfStream)
+            using (StringReader sr = new StringReader(csFileContent))
+            {
+                while (sr.Peek() != -1)
                 {
                     currentLine = sr.ReadLine();
                     if (Regex.IsMatch(currentLine, bindingRegex))
@@ -50,23 +73,22 @@ namespace SpecSharer.Logic
             return mappedMethodsAndBindings;
         }
 
-        private string getNextLineWithContent(StreamReader sr)
+        private string getNextLineWithContent(StringReader sr)
         {
-            string contentLine = sr.ReadLine().Trim();
-
-            while (contentLine.Length == 0)
-            {
+            string contentLine = "";
+            while (sr.Peek() != -1 && contentLine.Length == 0) {
                 contentLine = sr.ReadLine().Trim();
             }
-
             return contentLine;
         }
 
-        public Dictionary<string, string> ExtractMethodsAndBodies()
+        private void ExtractMethodsAndBodies(string csFileContent, out Dictionary<string, string> bodies,
+            out Dictionary<string, string> modifiers, out Dictionary<string, List<string>> parameters)
         {
-            Dictionary<string, string> output = new Dictionary<string, string>();
+            bodies = new Dictionary<string, string>();
+            modifiers = new Dictionary<string, string>();
+            parameters = new Dictionary<string, List<string>>();
 
-            string csFileContent = File.ReadAllText(filePath);
             SyntaxTree tree = CSharpSyntaxTree.ParseText(csFileContent);
             CompilationUnitSyntax root = tree.GetCompilationUnitRoot();
             NamespaceDeclarationSyntax nds = (NamespaceDeclarationSyntax)root.Members[0];
@@ -78,35 +100,45 @@ namespace SpecSharer.Logic
                 if (ds is MethodDeclarationSyntax)
                 {
                     MethodDeclarationSyntax mds = (MethodDeclarationSyntax)ds;
-                    
+
                     //Method name
                     string methodName = ((SyntaxToken)mds.Identifier).ValueText;
 
                     //Method body (including curly braces)
                     string methodBody = mds.Body.ToString();
 
-                    output.Add(methodName, methodBody);
+                    bodies.Add(methodName, methodBody);
+
+                    modifiers.Add(methodName, ExtractModifiers(mds));
+
+                    parameters.Add(methodName, ExtractParameters(mds));
                 }
             }
+        }
 
-            return output;
+        private string ExtractModifiers(MethodDeclarationSyntax mds)
+        {
+            string methodModifiers = "";
+            foreach (SyntaxToken mod in mds.Modifiers.ToArray())
+            {
+                methodModifiers = methodModifiers + mod.ValueText + " ";
+            }
+            methodModifiers = methodModifiers + mds.ReturnType.GetText().ToString();
+            return methodModifiers;
+        }
+
+        private List<string> ExtractParameters(MethodDeclarationSyntax mds)
+        {
+            List<string> parameters = new List<string>();
+
+            foreach (ParameterSyntax ps in mds.ParameterList.Parameters)
+            {
+                string parameterName = ps.Identifier.Text;
+                string parameterType = ps.Type.GetText().ToString();
+
+                parameters.Add($"{parameterType}{parameterName}");
+            }
+            return parameters;
         }
     }
 }
-
-//string methodModifiers = "";
-
-//foreach (SyntaxToken mod in mds.Modifiers.ToArray())
-//{
-//    methodModifiers = methodModifiers + mod.ValueText + " ";
-//}
-//methodModifiers = methodModifiers + mds.ReturnType.GetText().ToString();
-//methodName = methodModifiers + methodName;
-
-//var parameters = new List<string>();
-
-//foreach (var n in mds.ParameterList.Parameters)
-//{
-//    var parameterName = n.Identifier.Text;
-//    parameters.Add(parameterName);
-//}

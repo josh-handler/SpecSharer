@@ -17,10 +17,11 @@ namespace SpecSharerTests.Resources
         }
 
         [When(@"there is an input of '(.*)'")]
-        public void SingleInputBinding(string input)
+        public bool SingleInputBinding(string input)
         {
             //Comment
             Console.WriteLine($"Binding has input of {input}");
+            return true;
         }
 
         [Then(@"there are multiple inputs of '(*.)', '(a|b|c)', '(dddd)'")]

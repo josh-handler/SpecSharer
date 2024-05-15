@@ -10,7 +10,7 @@ namespace SpecSharerTests.Resources
     {
 
         [Given(@"there is a binding")]
-        public void Binding()
+        public void Binding(string input)
         {
             //Example Comment
             Console.WriteLine("Example binding");
