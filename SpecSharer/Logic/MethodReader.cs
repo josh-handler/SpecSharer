@@ -1,19 +1,10 @@
-﻿using EnvDTE;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace SpecSharer.Logic
 {
-    //Create a method to find [Given(@"there is a binding")]
     public class MethodReader
     {
 
@@ -32,9 +23,9 @@ namespace SpecSharer.Logic
             return File.Exists(filePath);
         }
 
-        public BindingsData processBindingsFile()
+        public BindingsFileData ProcessBindingsFile()
         {
-            BindingsData data = new BindingsData();
+            BindingsFileData data = new BindingsFileData();
 
             string csFileContent = File.ReadAllText(filePath);
 
@@ -53,20 +44,28 @@ namespace SpecSharer.Logic
             return data;
         }
 
-        private Dictionary<string, string> MapMethodsToBindings(string csFileContent)
+        private Dictionary<string, List<string>> MapMethodsToBindings(string csFileContent)
         {
-            Dictionary<string, string> mappedMethodsAndBindings = new Dictionary<string, string>();
+            Dictionary<string, List<string>> mappedMethodsAndBindings = new Dictionary<string, List<string>>();
+            List<string> bindingsList = new List<string>();
             string currentLine = "";
+            bool readyForMethod = false;
             //Chose the 'using' syntax to ensure the stream reader is disposed of promptly rather than waiting for the garbage collector
             using (StringReader sr = new StringReader(csFileContent))
             {
                 while (sr.Peek() != -1)
                 {
-                    currentLine = sr.ReadLine();
+                    currentLine = getNextLineWithContent(sr);
                     if (Regex.IsMatch(currentLine, bindingRegex))
                     {
-                        currentLine = currentLine.Trim();
-                        mappedMethodsAndBindings.Add(currentLine, getNextLineWithContent(sr));
+                        bindingsList.Add(currentLine);
+                        readyForMethod = true;
+                        
+                    }else if (readyForMethod)
+                    {
+                        mappedMethodsAndBindings.Add(currentLine, bindingsList);
+                        readyForMethod = false;
+                        bindingsList = new List<string>();
                     }
                 }
             }
@@ -76,8 +75,15 @@ namespace SpecSharer.Logic
         private string getNextLineWithContent(StringReader sr)
         {
             string contentLine = "";
-            while (sr.Peek() != -1 && contentLine.Length == 0) {
-                contentLine = sr.ReadLine().Trim();
+            string? untrimmedLine;
+            while (sr.Peek() != -1 && contentLine.Length == 0)
+            {
+                untrimmedLine = sr.ReadLine();
+                if(untrimmedLine != null)
+                {
+                    contentLine = untrimmedLine.Trim();
+
+                }
             }
             return contentLine;
         }
@@ -103,9 +109,13 @@ namespace SpecSharer.Logic
 
                     //Method name
                     string methodName = ((SyntaxToken)mds.Identifier).ValueText;
+                    string methodBody = "";
 
                     //Method body (including curly braces)
-                    string methodBody = mds.Body.ToString();
+                    if (mds.Body != null)
+                    {
+                        methodBody = mds.Body.ToString();
+                    }
 
                     bodies.Add(methodName, methodBody);
 
@@ -130,11 +140,15 @@ namespace SpecSharer.Logic
         private List<string> ExtractParameters(MethodDeclarationSyntax mds)
         {
             List<string> parameters = new List<string>();
+            string parameterType = "";
 
             foreach (ParameterSyntax ps in mds.ParameterList.Parameters)
             {
                 string parameterName = ps.Identifier.Text;
-                string parameterType = ps.Type.GetText().ToString();
+                if (ps.Type != null)
+                {
+                    parameterType = ps.Type.GetText().ToString();
+                }
 
                 parameters.Add($"{parameterType}{parameterName}");
             }

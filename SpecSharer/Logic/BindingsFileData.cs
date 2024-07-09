@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SpecSharer.Logic
 {
-    public class BindingsData
+    public class BindingsFileData
     {
 
         List<string> methods = [];
@@ -17,16 +17,16 @@ namespace SpecSharer.Logic
 
         Dictionary<string, List<string>> parameters = [];
 
-        Dictionary<string, string> bindings = [];
+        Dictionary<string, List<string>> bindings = [];
 
 
-        public BindingsData() { }
+        public BindingsFileData() { }
 
         public Dictionary<string, List<string>> Parameters { get => parameters; set => parameters = value; }
         public Dictionary<string, string> Modifiers { get => modifiers; set => modifiers = value; }
         public Dictionary<string, string> Bodies { get => bodies; set => bodies = value; }
         public List<string> Methods { get => methods; set => methods = value; }
-        public Dictionary<string, string> Bindings { get => bindings; set => bindings = value; }
+        public Dictionary<string, List<string>> Bindings { get => bindings; set => bindings = value; }
 
         public string getMethodLine(string method) {
 
@@ -46,5 +46,23 @@ namespace SpecSharer.Logic
             return line;
         }
 
+        public List<MethodData> produceMethodData()
+        {
+            List<MethodData> result = new List<MethodData>();
+            string method = "";
+
+            for(int i = 0; i < methods.Count; i++)
+            {
+                method = methods[i];
+                result.Add(new MethodData());
+                result[i].Name = method;
+                result[i].Body = bodies[method];
+                result[i].Modifiers = modifiers[method];
+                result[i].Parameters = parameters[method];
+                result[i].Bindings = bindings[this.getMethodLine(method)];
+            }
+
+            return result;
+        }
     }
 }

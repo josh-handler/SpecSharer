@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34622.214
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpecSharer", "SpecSharer\SpecSharer.csproj", "{07BCCE2C-F8F8-497C-9DA6-6A6105E88818}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpecSharer", "SpecSharer\SpecSharer.csproj", "{07BCCE2C-F8F8-497C-9DA6-6A6105E88818}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpecSharerTests", "SpecSharerTests\SpecSharerTests.csproj", "{BA73B93A-AA85-46F6-82F9-62B3895AAF8F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpecSharerTests", "SpecSharerTests\SpecSharerTests.csproj", "{BA73B93A-AA85-46F6-82F9-62B3895AAF8F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

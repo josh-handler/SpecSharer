@@ -1,4 +1,5 @@
 using SpecSharer.Logic;
+using System.Reflection;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
@@ -6,9 +7,9 @@ namespace SpecSharerTests
 {
     public class MethodReaderTests
     {
-        readonly string singleBindingFilePath = "C:\\Users\\jshimans\\source\\repos\\SpecSharer\\SpecSharerTests\\Resources\\SingleBindingFile.cs";
+        readonly string singleBindingFilePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Resources\SingleBindingFile.cs");
 
-        readonly string multiBindingFilePath = "C:\\Users\\jshimans\\source\\repos\\SpecSharer\\SpecSharerTests\\Resources\\MultipleBindingFile.cs";
+        readonly string multiBindingFilePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Resources\MultipleBindingFile.cs");
 
         readonly string invalidFilePath = "Not A Path";
 
@@ -43,7 +44,7 @@ namespace SpecSharerTests
         public void ProcessBindingsFileSingleBindingTest()
         {
             reader.SetFilePath(singleBindingFilePath);
-            BindingsData results = reader.processBindingsFile();
+            BindingsFileData results = reader.ProcessBindingsFile();
 
             Assert.Single(results.Methods);
             Assert.Equal("Binding", results.Methods.Single());
@@ -62,8 +63,8 @@ namespace SpecSharerTests
             Assert.Equal("string input", results.Parameters.Single().Value.Single());
 
             Assert.Single(results.Bindings);
-            Assert.Equal("[Given(@\"there is a binding\")]", results.Bindings.Single().Key);
-            Assert.Equal("public void Binding(string input)", results.Bindings.Single().Value);
+            Assert.Equal("public void Binding(string input)", results.Bindings.Single().Key);
+            Assert.Equal("[Given(@\"there is a binding\")]", results.Bindings.Single().Value.Single());
 
             Assert.Equal("public void Binding(string input)", results.getMethodLine("Binding"));
 
@@ -73,7 +74,7 @@ namespace SpecSharerTests
         public void MapMethodsToBindingsMultiBindingTest()
         {
             reader.SetFilePath(multiBindingFilePath);
-            BindingsData results = reader.processBindingsFile();
+            BindingsFileData results = reader.ProcessBindingsFile();
 
             Assert.Equal(3, results.Methods.Count);
 
@@ -110,14 +111,14 @@ namespace SpecSharerTests
             Assert.Equal("char charInput", results.Parameters["MultiInputBinding"][1]);
             Assert.Equal("int intInput", results.Parameters["MultiInputBinding"][2]);
 
+            Assert.Equal("public void FirstBinding()", results.Bindings.Keys.First());
+            Assert.Equal("public bool SingleInputBinding(string input)", results.Bindings.Keys.ElementAt(1));
+            Assert.Equal("public void MultiInputBinding(string stringInput, char charInput, int intInput)", results.Bindings.Keys.ElementAt(2));
 
-            Assert.Equal("[Given(@\"there is a first binding\")]", results.Bindings.Keys.First());
-            Assert.Equal("[When(@\"there is an input of '(.*)'\")]", results.Bindings.Keys.ElementAt(1));
-            Assert.Equal("[Then(@\"there are multiple inputs of '(*.)', '(a|b|c)', '(dddd)'\")]", results.Bindings.Keys.ElementAt(2));
-
-            Assert.Equal("public void FirstBinding()", results.Bindings[results.Bindings.Keys.First()]);
-            Assert.Equal("public bool SingleInputBinding(string input)", results.Bindings[results.Bindings.Keys.ElementAt(1)]);
-            Assert.Equal("public void MultiInputBinding(string stringInput, char charInput, int intInput)", results.Bindings[results.Bindings.Keys.ElementAt(2)]);
+            Assert.Equal("[Given(@\"there is a first binding\")]", results.Bindings[results.Bindings.Keys.First()].Single());
+            Assert.Equal("[When(@\"there is an input of '(.*)'\")]", results.Bindings[results.Bindings.Keys.ElementAt(1)].Single());
+            Assert.Equal("[Then(@\"there are multiple inputs of '(*.)', '(a|b|c)', '(dddd)'\")]", results.Bindings[results.Bindings.Keys.ElementAt(2)][0]);
+            Assert.Equal("[When(@\"there are inputs of '(*.)', '(a|b|c)', '(dddd)'\")]", results.Bindings[results.Bindings.Keys.ElementAt(2)][1]);
 
             Assert.Equal("public void FirstBinding()", results.getMethodLine("FirstBinding"));
             Assert.Equal("public bool SingleInputBinding(string input)", results.getMethodLine("SingleInputBinding"));

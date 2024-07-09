@@ -17,6 +17,7 @@ namespace SpecSharerTests.Resources
         }
 
         [When(@"there is an input of '(.*)'")]
+
         public bool SingleInputBinding(string input)
         {
             //Comment
@@ -25,6 +26,8 @@ namespace SpecSharerTests.Resources
         }
 
         [Then(@"there are multiple inputs of '(*.)', '(a|b|c)', '(dddd)'")]
+
+        [When(@"there are inputs of '(*.)', '(a|b|c)', '(dddd)'")]
         public void MultiInputBinding(string stringInput, char charInput, int intInput)
         {
             //Another Comment
