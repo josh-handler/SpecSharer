@@ -75,7 +75,7 @@ namespace SpecSharer.CommandLineInterface
                         helpRequested = true;
                         break;
                     case "p":
-                    case "path"
+                    case "path":
                         pathSet = true;
                         break;
                     case "e":
