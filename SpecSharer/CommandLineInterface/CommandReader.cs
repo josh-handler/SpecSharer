@@ -16,14 +16,16 @@ namespace SpecSharer.CommandLineInterface
         {
             "h",
             "e",
-            "p"
+            "p",
+            "t"
         };
 
         string[] longArgs =
         {
             "help",
             "extractRequested",
-            "path"
+            "path",
+            "target"
         };
 
         public CommandReader() 
@@ -66,6 +68,9 @@ namespace SpecSharer.CommandLineInterface
             bool extractRequested = false;
             bool helpRequested = false;
             bool pathSet = false;
+            bool validTargetSet = false;
+            string targetKey = "";
+            string pathValue = "";
             foreach (string key in argDict.Keys)
             {
                 switch (key)
@@ -77,10 +82,15 @@ namespace SpecSharer.CommandLineInterface
                     case "p":
                     case "path":
                         pathSet = true;
+                        pathValue = argDict[key];
                         break;
                     case "e":
                     case "extract":
                         extractRequested = true;
+                        break;
+                    case "t":
+                    case "target":
+                        targetKey = key;
                         break;
                 }
             }
@@ -91,17 +101,41 @@ namespace SpecSharer.CommandLineInterface
                 return;
             }
 
-            if (pathSet)
+            if (targetKey.Length != 0)
             {
+                controller.VerifyTarget(argDict[targetKey]);
+                validTargetSet = true;
+            }
 
+            if (pathSet && !validTargetSet)
+            {
+                bool validPath = controller.VerifyPath(pathValue);
+
+                if (!validPath)
+                {
+                    throw new ArgumentException($"p|path argument is invalid. {pathValue} is not a valid file path");
+                };
+
+                controller.ProcessFileAtPath(pathValue);
+                controller.DisplayExtractedBindings();
+            }
+            else if (pathSet && validTargetSet)
+            {
+                bool validPath = controller.VerifyPath(pathValue);
+
+                if (!validPath)
+                {
+                    throw new ArgumentException($"p|path argument is invalid. {pathValue} is not a valid file path");
+                };
+
+                controller.ProcessFileAtPath(pathValue);
+                controller.DisplayExtractedBindings();
             }
 
             if (extractRequested)
             {
-                
-            }
 
-            throw new NotImplementedException();
+            }
         }
     }
 }

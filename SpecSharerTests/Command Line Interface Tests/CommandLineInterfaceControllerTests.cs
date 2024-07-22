@@ -1,5 +1,6 @@
 using SpecSharer.CommandLineInterface;
 using SpecSharer.CommandLineInterface.CliHelp;
+using SpecSharer.Logic;
 using SpecSharerTests.Resources;
 using System.Diagnostics;
 using System.Reflection;
@@ -12,6 +13,8 @@ namespace SpecSharerTests
     public class CommandLineInterfaceControllerTests
     {
         CommandLineInterfaceController controller;
+
+        readonly string resourcesFolder = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Resources\");
 
         readonly string singleBindingFilePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Resources\SingleBindingFile.cs");
 
@@ -31,13 +34,11 @@ namespace SpecSharerTests
         {
             _testOutputHelper = testOutputHelper;
             controller = new CommandLineInterfaceController();
-
             if(Console.IsOutputRedirected)
             {
-            var standardOutput = new StreamWriter(Console.OpenStandardOutput());
-            Console.SetOut(standardOutput);
+                var standardOutput = new StreamWriter(Console.OpenStandardOutput());
+                Console.SetOut(standardOutput);
             }
-            
         }
 
         [Fact]
@@ -129,14 +130,12 @@ namespace SpecSharerTests
         [Fact]
         public void GiveHelpForTooManyArguments()
         {
-            Dictionary<string, string> helpArgsDict = new Dictionary<string, string> { { "help", "True" }, { "path", "True" }, {"e", "True" } };
-
             string expected = HelpStringData.multipleArgumentsExplanationString + HelpStringData.generalHelpString;
 
             using (StringWriter sw = new StringWriter())
             {
                 Console.SetOut(sw);
-                controller.GiveHelp(helpArgsDict);
+                controller.GiveHelp(argsDict);
                 
                 Assert.Equal(expected, sw.ToString());
             }
@@ -159,6 +158,61 @@ namespace SpecSharerTests
             }
 
             Assert.True(exceptionThrown);
+        }
+
+        [Fact]
+        public void DisplayPassedBindingsTestSingleBindingFile()
+        {
+            string expected = $"Method Name:{Environment.NewLine}\tpublic void Binding(string input){Environment.NewLine}Associated Bindings:{Environment.NewLine}\t[Given(@\"there is a binding\")]{Environment.NewLine}";
+
+            using (StringWriter sw = new StringWriter())
+            {
+                _testOutputHelper.WriteLine(sw.ToString());
+                Console.SetOut(sw);
+                BindingsFileData data = controller.ProcessFileAtPath(singleBindingFilePath);
+                controller.DisplayPassedBindings(data);
+                Assert.Equal(expected, sw.ToString());
+            }
+        }
+
+        [Fact]
+        public void DisplayPassedBindingsTestMultiBindingFile()
+        {
+            string expected = $"Method Name:{Environment.NewLine}\tpublic void FirstBinding(){Environment.NewLine}Associated Bindings:{Environment.NewLine}\t[Given(@\"there is a first binding\")]{Environment.NewLine}Method Name:{Environment.NewLine}\tpublic bool SingleInputBinding(string input){Environment.NewLine}Associated Bindings:{Environment.NewLine}\t[When(@\"there is an input of '(.*)'\")]{Environment.NewLine}Method Name:{Environment.NewLine}\tpublic void MultiInputBinding(string stringInput, char charInput, int intInput){Environment.NewLine}Associated Bindings:{Environment.NewLine}\t[Then(@\"there are multiple inputs of '(*.)', '(a|b|c)', '(dddd)'\")]{Environment.NewLine}\t[When(@\"there are inputs of '(*.)', '(a|b|c)', '(dddd)'\")]{Environment.NewLine}";
+
+            using (StringWriter sw = new StringWriter())
+            {
+                Console.SetOut(sw);
+                BindingsFileData data = controller.ProcessFileAtPath(multiBindingFilePath);
+                controller.DisplayPassedBindings(data);
+                Assert.Equal(expected, sw.ToString());
+            }
+        }
+
+        [Fact]
+        public void DisplayExtractedBindingsTestMultiBindingFile()
+        {
+            string expected = $"The following methods and associated bindings were extracted:{Environment.NewLine}Method Name:{Environment.NewLine}\tpublic void FirstBinding(){Environment.NewLine}Associated Bindings:{Environment.NewLine}\t[Given(@\"there is a first binding\")]{Environment.NewLine}Method Name:{Environment.NewLine}\tpublic bool SingleInputBinding(string input){Environment.NewLine}Associated Bindings:{Environment.NewLine}\t[When(@\"there is an input of '(.*)'\")]{Environment.NewLine}Method Name:{Environment.NewLine}\tpublic void MultiInputBinding(string stringInput, char charInput, int intInput){Environment.NewLine}Associated Bindings:{Environment.NewLine}\t[Then(@\"there are multiple inputs of '(*.)', '(a|b|c)', '(dddd)'\")]{Environment.NewLine}\t[When(@\"there are inputs of '(*.)', '(a|b|c)', '(dddd)'\")]{Environment.NewLine}";
+
+            using (StringWriter sw = new StringWriter())
+            {
+                Console.SetOut(sw);
+                BindingsFileData data = controller.ProcessFileAtPath(multiBindingFilePath);
+                controller.DisplayExtractedBindings();
+                Assert.Equal(expected, sw.ToString());
+            }
+        }
+
+        [Fact]
+        public void VerifyTargetFile()
+        {
+            controller.VerifyTarget(singleBindingFilePath);
+        }
+
+        [Fact]
+        public void VerifyTargetFolder()
+        {
+            controller.VerifyTarget(resourcesFolder);
         }
 
     }

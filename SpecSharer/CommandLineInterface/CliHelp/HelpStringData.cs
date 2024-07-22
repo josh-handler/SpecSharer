@@ -31,7 +31,7 @@ namespace SpecSharer.CommandLineInterface.CliHelp
 
         private static readonly Dictionary<string, ArgumentHelpData> argumentHelpData = new()
             {
-               { "p", new ArgumentHelpData(
+                { "p", new ArgumentHelpData(
                     "p",
                     "path",
                     "Path of file which will have its methods and bindings extracted.",
@@ -40,7 +40,12 @@ namespace SpecSharer.CommandLineInterface.CliHelp
                     "e",
                     "extract",
                     $"Command to extract and present methods and bindings from file indicated by path command or indicated later in the process.",
-                    "specsharer -e [other arguments]") }
+                    "specsharer -e [other arguments]") },
+                {"t", new ArgumentHelpData(
+                    "t",
+                    "taret",
+                    $"Path of file or folder in which to write a file extracted bindings.",
+                    "specsharer -t:[path string] [other arguments]") }
         };
 
         public static string GenerateArgumentHelpString(string argument)
