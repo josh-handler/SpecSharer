@@ -70,6 +70,7 @@ namespace SpecSharer.CommandLineInterface
             //bool extractRequested = false;
             bool helpRequested = false;
             bool pathSet = false;
+            bool validTargetSet = false;
             string targetValue = "";
             string pathValue = "";
             bool storeInGithub = false;
