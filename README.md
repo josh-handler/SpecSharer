@@ -2,7 +2,7 @@
 
 Spechsharer is an application that uses Microsoft.CodeAnalysis.CSharp to extract bindings from a chosen file and either display them in the console, store them in another chosen local file or programmatically store them in a shared Github Repository using the Octokit library.
 
-##Usage
+## Usage
 
 Please create a Github Personal Access Token and store it in the file  "SpecSharer\SpecSharerTests\Resources\PatStore.txt"
 
