@@ -50,6 +50,7 @@ namespace SpecSharer.Logic
 
             return data;
         }
+
         public BindingsFileData ProcessBindingsFileFromRepository(RepositoryContent content)
         {
             string csFileContent = content.Content;

@@ -1,4 +1,6 @@
+using Octokit;
 using SpecSharer.Logic;
+using System.IO;
 using System.Reflection;
 using Xunit.Abstractions;
 using Xunit.Sdk;
@@ -123,6 +125,20 @@ namespace SpecSharerTests
             Assert.Equal("public void FirstBinding()", results.GetMethodLine("FirstBinding"));
             Assert.Equal("public bool SingleInputBinding(string input)", results.GetMethodLine("SingleInputBinding"));
             Assert.Equal("public void MultiInputBinding(string stringInput, char charInput, int intInput)", results.GetMethodLine("MultiInputBinding"));
+        }
+
+        [Fact]
+        public void ProcessBindingsFromRepositoryTest()
+        {
+            string content = File.ReadAllText(singleBindingFilePath);
+            byte[] contentBytes = System.Text.Encoding.UTF8.GetBytes(content);
+            string content64 = Convert.ToBase64String(contentBytes);
+            var repoContent = new RepositoryContent(name: "DummyRepo", path: "path", sha: "dummySha0", size: content.Length, type: ContentType.File, downloadUrl: "dummyDownloadUrl", url: "dummyUrl", gitUrl: "dummyGitUrl", htmlUrl: "dummyHtmlUrl", encoding: "base64", encodedContent: content64, target: null, submoduleGitUrl: null);
+
+            var actualData = reader.ProcessBindingsFileFromRepository(repoContent);
+            reader.SetFilePath(singleBindingFilePath);
+            var expectedData = reader.ProcessBindingsFile();
+            Assert.Equal(expectedData.ConvertToString(), actualData.ConvertToString());
         }
     }
 }

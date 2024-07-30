@@ -62,37 +62,6 @@ namespace SpecSharer.CommandLineInterface
             return reader.GetFilePath();
         }
 
-        private bool ConfirmProcessFile(string filePath)
-        {
-            bool validResponse = false;
-            string? response = "";
-
-            console.WriteLine($"Extract Bindings from {filePath}");
-            console.WriteLine($"y / n");
-            while (!validResponse)
-            {
-                response = console.ReadLine();
-                if(response == "y" || response == "n")
-                {
-                    validResponse = true;
-                }
-                else
-                {
-                    console.WriteLine("Please respond with 'y' or 'n'");
-                }
-            }
-
-            if(response == "y")
-            {
-                ExtractedBindings = reader.ProcessBindingsFile();
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
         public string SetFilePathFromInput()
         {
             string pathRequestResult = RequestPath(true);

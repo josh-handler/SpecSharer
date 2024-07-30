@@ -47,18 +47,6 @@ namespace SpecSharer.CommandLineInterface
             controller = new CommandLineInterfaceController(new GithubManager(), console);
         }
 
-        internal void MainLoop()
-        {
-            bool awaitingCommand = true;
-            string? receivedArg;
-            while (awaitingCommand)
-            {
-                receivedArg = Console.ReadLine();
-                
-                
-            }
-        }
-
         internal List<string> ValidateArgs(Dictionary<string, string>.KeyCollection keys)
         {
             List<string> invalidKeys = new();
@@ -79,10 +67,9 @@ namespace SpecSharer.CommandLineInterface
 
         internal async Task Interpret(Dictionary<string, string> argDict)
         {
-            bool extractRequested = false;
+            //bool extractRequested = false;
             bool helpRequested = false;
             bool pathSet = false;
-            bool validTargetSet = false;
             string targetValue = "";
             string pathValue = "";
             bool storeInGithub = false;
@@ -100,10 +87,10 @@ namespace SpecSharer.CommandLineInterface
                         pathSet = true;
                         pathValue = argDict[key];
                         break;
-                    case "e":
-                    case "extract":
-                        extractRequested = true;
-                        break;
+                    //case "e":
+                    //case "extract":
+                    //    extractRequested = true;
+                    //    break;
                     case "t":
                     case "target":
                         targetValue = argDict[key];
@@ -188,10 +175,6 @@ namespace SpecSharer.CommandLineInterface
                 controller.StoreExtractedBindingsLocally(targetValue);
                 return;
             }
-            //if (extractRequested)
-            //{
-
-            //}
         }
     }
 }

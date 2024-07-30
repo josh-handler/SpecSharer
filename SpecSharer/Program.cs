@@ -1,6 +1,5 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using SpecSharer.CommandLineInterface;
-using SpecSharer.Data;
 
 Console.WriteLine("Welcome To SpecSharer!");
 
