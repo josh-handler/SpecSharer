@@ -1,5 +1,7 @@
 ﻿using SpecSharer.CommandLineInterface.CliHelp;
+using SpecSharer.Data;
 using SpecSharer.Logic;
+using SpecSharer.Storage;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -14,24 +16,32 @@ namespace SpecSharer.CommandLineInterface
     public class CommandLineInterfaceController
     {
         private MethodReader reader;
-        private BindingsFileData extractedBindings;
+        private BindingsFileData extractedBindings = new BindingsFileData();
+        private List<BindingsFileData> retreivedBindings = [];
+        private IGithubManager manager;
+        private IConsole console;
+        
 
-        public CommandLineInterfaceController()
+        internal BindingsFileData ExtractedBindings { get => extractedBindings; set => extractedBindings = value; }
+        internal List<BindingsFileData> RetreivedBindings { get => retreivedBindings; set => retreivedBindings = value; }
+
+        public CommandLineInterfaceController(IGithubManager manager, IConsole console)
         {
             reader = new MethodReader();
-            extractedBindings = new BindingsFileData();
+            this.manager = manager;
+            this.console = console;
         }
 
         public string RequestPath(bool firstAttempt)
         {
             if (!firstAttempt) 
             { 
-             Console.WriteLine("The input was not a valid file path");
+             console.WriteLine("The input was not a valid file path");
             }
 
-            Console.WriteLine("Pleaser enter the path of the bindings file you want extracted");
+            console.WriteLine("Pleaser enter the path of the bindings file you want extracted");
             string filePath = "";
-            filePath += Console.ReadLine();
+            filePath += console.ReadLine();
 
             return filePath;
         }
@@ -57,41 +67,30 @@ namespace SpecSharer.CommandLineInterface
             bool validResponse = false;
             string? response = "";
 
-            Console.WriteLine($"Extract Bindings from {filePath}");
-            Console.WriteLine($"y / n");
+            console.WriteLine($"Extract Bindings from {filePath}");
+            console.WriteLine($"y / n");
             while (!validResponse)
             {
-                response = Console.ReadLine();
+                response = console.ReadLine();
                 if(response == "y" || response == "n")
                 {
                     validResponse = true;
                 }
                 else
                 {
-                    Console.WriteLine("Please respond with 'y' or 'n'");
+                    console.WriteLine("Please respond with 'y' or 'n'");
                 }
             }
 
             if(response == "y")
             {
-                extractedBindings = reader.ProcessBindingsFile();
+                ExtractedBindings = reader.ProcessBindingsFile();
                 return true;
             }
             else
             {
                 return false;
             }
-        }
-
-        internal void Startup()
-        {
-            string filePath = SetFilePathFromInput();
-
-            ConfirmAndProcessFileAtPath(filePath);
-
-            DisplayExtractedBindings();
-
-            throw new NotImplementedException();
         }
 
         public string SetFilePathFromInput()
@@ -106,48 +105,38 @@ namespace SpecSharer.CommandLineInterface
             return pathRequestResult;
         }
 
-        public void ConfirmAndProcessFileAtPath(string filePath)
-        {
-            bool fileProcessed = ConfirmProcessFile(filePath);
-
-            while (!fileProcessed)
-            {
-                filePath = SetFilePathFromInput();
-                fileProcessed = ConfirmProcessFile(filePath);
-            }
-        }
-
-        internal BindingsFileData ProcessFileAtPath(string filePath)
+        public BindingsFileData ProcessFileAtPath(string filePath)
         {
             reader.SetFilePath(filePath);
-            extractedBindings = reader.ProcessBindingsFile();
-            return extractedBindings;
+            ExtractedBindings = reader.ProcessBindingsFile();
+            return ExtractedBindings;
         }
 
         public void DisplayExtractedBindings()
         {
-            Console.WriteLine("The following methods and associated bindings were extracted:");
-            this.DisplayPassedBindings(extractedBindings);
+            console.WriteLine("The following methods and associated bindings were extracted:");
+            this.DisplayPassedBindings(ExtractedBindings);
         }
 
         public void DisplayPassedBindings(BindingsFileData bindings)
         {
             foreach (string method in bindings.Bindings.Keys)
             {
-                Console.WriteLine("Method Name:");
-                Console.WriteLine("\t" + method);
-                Console.WriteLine("Associated Bindings:");
-                bindings.Bindings[method].ForEach(bindingString => Console.WriteLine("\t" + bindingString));
+                console.WriteLine("Method Name:");
+                console.WriteLine("\t" + method);
+                console.WriteLine("Associated Bindings:");
+                bindings.Bindings[method].ForEach(bindingString => console.WriteLine("\t" + bindingString));
             }
         }
 
-        internal void GiveHelp(Dictionary<string, string> argDict)
+        //TODO: Update GiveHelp function
+        public void GiveHelp(Dictionary<string, string> argDict)
         {
             if(!argDict.ContainsKey("help") && !argDict.ContainsKey("h")){
                 throw new UnreachableException("You have reached the help function without an argument requesting help.");
             }
 
-            HelpResponder responder = new HelpResponder();
+            HelpResponder responder = new HelpResponder(console);
 
             if(argDict.Keys.Count == 1)
             {
@@ -164,25 +153,116 @@ namespace SpecSharer.CommandLineInterface
             }
         }
 
-        internal bool VerifyTarget(string ?target)
+        public bool VerifyLocalTarget(string ?target)
         {
             if(target == null)
             {
                 return false;
             }
 
-            if(File.Exists(target) || Directory.Exists(target))
+            bool fileExists = File.Exists(target);
+            bool directoryExists = Directory.Exists(target);
+
+
+            if (fileExists || directoryExists)
             {
                 return true;
+            }
+
+            try
+            {
+                DirectoryInfo? parentDirectory = Directory.GetParent(target);
+
+                if (parentDirectory == null)
+                {
+                    return false;
+                }
+
+                if (parentDirectory.Exists)
+                {
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
             }
 
             return false;
         }
 
-        internal bool WriteToTarget(string target, BindingsFileData data)
+        public void StoreExtractedBindingsLocally(string target)
         {
+            FileStorer storer = new FileStorer();
+            storer.StoreBindings(target, ExtractedBindings, false);
+            console.WriteLine("Bindings have been succesfully stored on your local machine");
+        }
 
-            return false;
+        public async Task StoreExtractedBindingsInGithub(string targetValue)
+        {            
+            Task<Octokit.RepositoryContentChangeSet> storeBindingsTask = manager.StoreBindings(ExtractedBindings, targetValue);
+            console.WriteLine("Attempting to store bindings in the GitHub Repository");
+            await storeBindingsTask;
+            if (storeBindingsTask.IsCompletedSuccessfully)
+            {
+                console.WriteLine("Bindings have been succesfully stored in the GitHub Repository");
+            }
+            else
+            {
+                console.WriteLine("There was an issue storing bindings in the GitHub Repository");
+            }
+        }
+
+        public async Task RetrieveBindingsFromGithub(string pathValue)
+        {
+            Task<IReadOnlyList<Octokit.RepositoryContent>> retrieveFilesTask = manager.RetrieveFiles(pathValue);
+            console.WriteLine("Attempting to retrieve bindings from the GitHub Repository");
+            await retrieveFilesTask;
+            if (!retrieveFilesTask.IsCompletedSuccessfully)
+            {
+                console.WriteLine("There was an issue retrieving bindings from the GitHub Repository");
+                return;
+            }
+
+            //Maybe this should be in GithubManager
+            IReadOnlyList<Octokit.RepositoryContent> files = retrieveFilesTask.Result;
+
+            if (files.Count == 0)
+            {
+                console.WriteLine("No matching files were found in the GitHub Repository");
+                return;
+            }
+
+            BindingsFileData data;
+            foreach (Octokit.RepositoryContent file in files)
+            {
+                data = reader.ProcessBindingsFileFromRepository(file);
+                RetreivedBindings.Add(data);
+            }
+
+            console.WriteLine("Bindings have been succesfully retrieved from the GitHub Repository");
+
+
+        }
+
+        public void DisplayRetrievedBindings()
+        {
+            console.WriteLine("The following methods and associated bindings were retreived:");
+            foreach (BindingsFileData bindings in  RetreivedBindings)
+            {
+            this.DisplayPassedBindings(bindings);
+            }
+        }
+
+        public void StoreRetrievedBindingsLocally(string target)
+        {
+            FileStorer storer = new FileStorer();
+
+            foreach (BindingsFileData bindings in RetreivedBindings)
+            {
+                storer.StoreBindings(target, bindings, false);
+            }
+            console.WriteLine("Bindings have been succesfully stored on your local machine");
         }
     }
 }

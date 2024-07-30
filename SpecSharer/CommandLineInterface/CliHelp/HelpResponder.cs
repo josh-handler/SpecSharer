@@ -8,9 +8,14 @@ namespace SpecSharer.CommandLineInterface.CliHelp
 {
     internal class HelpResponder
     {
+        IConsole console;
+        internal HelpResponder(IConsole console)
+        {
+            this.console = console;
+        }
         internal void GiveGeneralHelpResponse()
         {
-            Console.Write(HelpStringData.generalHelpString);
+            console.Write(HelpStringData.generalHelpString);
         }
 
         internal void GiveArgumentExplanationResponse(Dictionary<string, string> argDict)
@@ -18,12 +23,12 @@ namespace SpecSharer.CommandLineInterface.CliHelp
             argDict.Remove("h");
             argDict.Remove("help");
 
-            Console.Write(HelpStringData.GenerateArgumentHelpString(argDict.Keys.Single()));
+            console.Write(HelpStringData.GenerateArgumentHelpString(argDict.Keys.Single()));
         }
 
         internal void GiveMultipleArgumentsExplanation()
         {
-            Console.Write(HelpStringData.multipleArgumentsExplanationString);
+            console.Write(HelpStringData.multipleArgumentsExplanationString);
             this.GiveGeneralHelpResponse();
         }
     }

@@ -1,7 +1,9 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Octokit;
 using System.Text.RegularExpressions;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SpecSharer.Logic
 {
@@ -25,22 +27,33 @@ namespace SpecSharer.Logic
 
         public BindingsFileData ProcessBindingsFile()
         {
-            BindingsFileData data = new BindingsFileData();
-
             string csFileContent = File.ReadAllText(filePath);
+            BindingsFileData data = ProcessString(csFileContent);
+            return data;
+        }
+
+        public BindingsFileData ProcessString(string bindingsString)
+        {
+            BindingsFileData data = new BindingsFileData();
 
             Dictionary<string, string> bodies;
             Dictionary<string, string> modifiers;
             Dictionary<string, List<string>> parameters;
 
-            ExtractMethodsAndBodies(csFileContent, out bodies, out modifiers, out parameters);
+            ExtractMethodsAndBodies(bindingsString, out bodies, out modifiers, out parameters);
             data.Methods = bodies.Keys.ToList();
             data.Bodies = bodies;
             data.Modifiers = modifiers;
             data.Parameters = parameters;
 
-            data.Bindings = MapMethodsToBindings(csFileContent);
+            data.Bindings = MapMethodsToBindings(bindingsString);
 
+            return data;
+        }
+        public BindingsFileData ProcessBindingsFileFromRepository(RepositoryContent content)
+        {
+            string csFileContent = content.Content;
+            BindingsFileData data = ProcessString(csFileContent);
             return data;
         }
 
@@ -95,8 +108,19 @@ namespace SpecSharer.Logic
             modifiers = new Dictionary<string, string>();
             parameters = new Dictionary<string, List<string>>();
 
+            //if(csFileContent.Length == 0)
+            //{
+            //    return;
+            //}
+
             SyntaxTree tree = CSharpSyntaxTree.ParseText(csFileContent);
             CompilationUnitSyntax root = tree.GetCompilationUnitRoot();
+
+            if(root.Members.Count == 0)
+            {
+                return;
+            }
+
             NamespaceDeclarationSyntax nds = (NamespaceDeclarationSyntax)root.Members[0];
             ClassDeclarationSyntax cds = (ClassDeclarationSyntax)nds.Members[0];
             foreach (MemberDeclarationSyntax ds in cds.Members)

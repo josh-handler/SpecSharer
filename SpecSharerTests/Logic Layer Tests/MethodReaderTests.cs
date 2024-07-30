@@ -7,21 +7,21 @@ namespace SpecSharerTests
 {
     public class MethodReaderTests
     {
-        readonly string singleBindingFilePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Resources\SingleBindingFile.cs");
+        readonly string singleBindingFilePath = Path.Combine(""+Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Resources\SingleBindingFile.cs");
 
-        readonly string multiBindingFilePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Resources\MultipleBindingFile.cs");
+        readonly string multiBindingFilePath = Path.Combine(""+Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Resources\MultipleBindingFile.cs");
 
         readonly string invalidFilePath = "Not A Path";
 
         private MethodReader reader;
 
-        private readonly ITestOutputHelper _testOutputHelper;
+        private readonly ITestOutputHelper testOutputHelper;
 
         public MethodReaderTests(ITestOutputHelper testOutputHelper)
         {
 
             reader = new MethodReader();
-            _testOutputHelper = testOutputHelper;
+            this.testOutputHelper = testOutputHelper;
         }
 
         [Fact]
@@ -66,7 +66,7 @@ namespace SpecSharerTests
             Assert.Equal("public void Binding(string input)", results.Bindings.Single().Key);
             Assert.Equal("[Given(@\"there is a binding\")]", results.Bindings.Single().Value.Single());
 
-            Assert.Equal("public void Binding(string input)", results.getMethodLine("Binding"));
+            Assert.Equal("public void Binding(string input)", results.GetMethodLine("Binding"));
 
         }
 
@@ -120,9 +120,9 @@ namespace SpecSharerTests
             Assert.Equal("[Then(@\"there are multiple inputs of '(*.)', '(a|b|c)', '(dddd)'\")]", results.Bindings[results.Bindings.Keys.ElementAt(2)][0]);
             Assert.Equal("[When(@\"there are inputs of '(*.)', '(a|b|c)', '(dddd)'\")]", results.Bindings[results.Bindings.Keys.ElementAt(2)][1]);
 
-            Assert.Equal("public void FirstBinding()", results.getMethodLine("FirstBinding"));
-            Assert.Equal("public bool SingleInputBinding(string input)", results.getMethodLine("SingleInputBinding"));
-            Assert.Equal("public void MultiInputBinding(string stringInput, char charInput, int intInput)", results.getMethodLine("MultiInputBinding"));
+            Assert.Equal("public void FirstBinding()", results.GetMethodLine("FirstBinding"));
+            Assert.Equal("public bool SingleInputBinding(string input)", results.GetMethodLine("SingleInputBinding"));
+            Assert.Equal("public void MultiInputBinding(string stringInput, char charInput, int intInput)", results.GetMethodLine("MultiInputBinding"));
         }
     }
 }
