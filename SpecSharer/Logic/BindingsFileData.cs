@@ -151,7 +151,14 @@ namespace SpecSharer.Logic
 
         public void RemoveSpecificMethodData(string methodName)
         {
-            Bindings.Remove(GetMethodLine(methodName));
+            try
+            {
+                Bindings.Remove(GetMethodLine(methodName));
+            }
+            catch (KeyNotFoundException)
+            {
+                Bindings.Remove(methodName);
+            }
             Bodies.Remove(methodName);
             Modifiers.Remove(methodName);
             Parameters.Remove(methodName);

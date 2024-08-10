@@ -72,7 +72,7 @@ namespace SpecSharerTests.Command_Line_Interface_Tests
             this.testOutputHelper = testOutputHelper;
             console = new MockConsoleWrapper();
             manager = new MockGithubManager();
-            reader = new CommandReader(manager, console);
+            reader = new CommandReader(manager, console, new MethodReader());
         }
 
         [Fact]

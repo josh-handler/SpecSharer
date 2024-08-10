@@ -83,15 +83,6 @@ namespace SpecSharerTests.Data_Layer_Tests
                     file = content;
                 }
             }
-
-            testOutputHelper.WriteLine(file.Encoding);
-            testOutputHelper.WriteLine(file.EncodedContent);
-            testOutputHelper.WriteLine(file.Type.StringValue);
-            testOutputHelper.WriteLine(file.Url);
-            testOutputHelper.WriteLine(file.Content);
-
-
-
             Assert.NotNull(file);
             Assert.Equal(githubStaticTestFileContent, file.Content);
         }

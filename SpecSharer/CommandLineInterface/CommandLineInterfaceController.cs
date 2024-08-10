@@ -15,19 +15,20 @@ namespace SpecSharer.CommandLineInterface
 {
     public class CommandLineInterfaceController
     {
-        private MethodReader reader;
+        private IMethodReader reader;
         private BindingsFileData extractedBindings = new BindingsFileData();
         private List<BindingsFileData> retreivedBindings = [];
         private IGithubManager manager;
         private IConsole console;
-        
+        private IFileStorer? storer;
+        private HelpResponder? responder;
 
         internal BindingsFileData ExtractedBindings { get => extractedBindings; set => extractedBindings = value; }
         internal List<BindingsFileData> RetreivedBindings { get => retreivedBindings; set => retreivedBindings = value; }
 
-        public CommandLineInterfaceController(IGithubManager manager, IConsole console)
+        public CommandLineInterfaceController(IGithubManager manager, IConsole console, IMethodReader reader)
         {
-            reader = new MethodReader();
+            this.reader = reader;
             this.manager = manager;
             this.console = console;
         }
@@ -105,7 +106,7 @@ namespace SpecSharer.CommandLineInterface
                 throw new UnreachableException("You have reached the help function without an argument requesting help.");
             }
 
-            HelpResponder responder = new HelpResponder(console);
+            responder = new HelpResponder(console);
 
             if(argDict.Keys.Count == 1)
             {
@@ -162,7 +163,7 @@ namespace SpecSharer.CommandLineInterface
 
         public void StoreExtractedBindingsLocally(string target)
         {
-            FileStorer storer = new FileStorer();
+            storer = new FileStorer();
             storer.StoreBindings(target, ExtractedBindings, false);
             console.WriteLine("Bindings have been succesfully stored on your local machine");
         }

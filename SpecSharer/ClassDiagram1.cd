@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="SpecSharer.CommandLineInterface.CommandReader" Collapsed="true">
+    <Position X="2.5" Y="0.5" Width="1.5" />
+    <AssociationLine Name="controller" Type="SpecSharer.CommandLineInterface.CommandLineInterfaceController" FixedToPoint="true">
+      <Path>
+        <Point X="3.219" Y="1.062" />
+        <Point X="3.219" Y="2.312" />
+        <Point X="4" Y="2.312" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.575" Y="0.06" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>QAAAAAAAgAAAAAEAggAAAAAAAAAAAAAAAAAQAAAAAAA=</HashCode>
+      <FileName>CommandLineInterface\CommandReader.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="controller" />
+      <Field Name="console" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="SpecSharer.CommandLineInterface.CommandLineInterfaceController" Collapsed="true">
+    <Position X="4" Y="2" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="true" />
+    </Compartments>
+    <AssociationLine Name="manager" Type="SpecSharer.Data.IGithubManager" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="4" Y="2.125" />
+        <Point X="3.625" Y="2.125" />
+        <Point X="3.625" Y="1.625" />
+        <Point X="8.625" Y="1.625" />
+        <Point X="8.625" Y="4.281" />
+        <Point X="8.25" Y="4.281" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>IAEiYAAEgAiAggAAAAAAAACEASBCIAABAAAAAgQQAAA=</HashCode>
+      <FileName>CommandLineInterface\CommandLineInterfaceController.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="manager" />
+      <Field Name="console" />
+      <Field Name="storer" />
+      <Field Name="responder" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="SpecSharer.CommandLineInterface.ConsoleWrapper" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="1" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AABAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAEAAAA=</HashCode>
+      <FileName>CommandLineInterface\ConsoleWrapper.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.263" Collapsed="true" />
+  </Class>
+  <Class Name="SpecSharer.CommandLineInterface.CliHelp.HelpResponder" Collapsed="true">
+    <Position X="4" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAgAgAAAAAAAAAAAAIAAAAAAAAAgAAAAAAAAA=</HashCode>
+      <FileName>CommandLineInterface\CliHelp\HelpResponder.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="console" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="SpecSharer.CommandLineInterface.CliHelp.ArgumentHelpData" Collapsed="true">
+    <Position X="4" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAQAAABEgAAEQIAQBAAAEAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>CommandLineInterface\CliHelp\ArgumentHelpData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SpecSharer.CommandLineInterface.CliHelp.HelpStringData" Collapsed="true">
+    <Position X="4" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAEBAAQAACAAAAAAEAAAAAAAAAAA=</HashCode>
+      <FileName>CommandLineInterface\CliHelp\HelpStringData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SpecSharer.Storage.FileStorer" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="6.75" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAg=</HashCode>
+      <FileName>Data\FileStorer.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="SpecSharer.Data.GithubManager" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="6.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIBhACAAAQgAAAAAQAAAACCABAEEAAAAAAAAAACAg=</HashCode>
+      <FileName>Data\GithubManager.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="SpecSharer.Logic.MethodReader" Collapsed="true">
+    <Position X="5.5" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAIBAABABAgAAAAAAAAAEABAAIAAAAARAA=</HashCode>
+      <FileName>Logic\MethodReader.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="SpecSharer.Logic.BindingsFileData" Collapsed="true">
+    <Position X="5" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>DAAABAgAAAAAAABAAAAgAgAAAAIAAAAAgMAEQADAEEQ=</HashCode>
+      <FileName>Logic\BindingsFileData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="SpecSharer.CommandLineInterface.IConsole" Collapsed="true">
+    <Position X="1" Y="3.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AABAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAEAAAA=</HashCode>
+      <FileName>CommandLineInterface\IConsole.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="SpecSharer.Storage.IFileStorer" Collapsed="true">
+    <Position X="6.75" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAg=</HashCode>
+      <FileName>Data\IFileStorer.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="SpecSharer.Data.IGithubManager" Collapsed="true">
+    <Position X="6.75" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIABAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAg=</HashCode>
+      <FileName>Data\IGithubManager.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

@@ -41,7 +41,7 @@ namespace SpecSharerTests
             console = new MockConsoleWrapper();
             manager = new MockGithubManager();
             this.testOutputHelper = testOutputHelper;
-            controller = new CommandLineInterfaceController(manager, console);
+            controller = new CommandLineInterfaceController(manager, console, new MethodReader());
         }
 
         [Fact]

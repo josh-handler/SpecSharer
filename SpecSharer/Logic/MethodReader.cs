@@ -7,7 +7,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SpecSharer.Logic
 {
-    public class MethodReader
+    public class MethodReader : IMethodReader
     {
 
         private string filePath = "";
@@ -74,8 +74,9 @@ namespace SpecSharer.Logic
                     {
                         bindingsList.Add(currentLine);
                         readyForMethod = true;
-                        
-                    }else if (readyForMethod)
+
+                    }
+                    else if (readyForMethod)
                     {
                         mappedMethodsAndBindings.Add(currentLine, bindingsList);
                         readyForMethod = false;
@@ -93,7 +94,7 @@ namespace SpecSharer.Logic
             while (sr.Peek() != -1 && contentLine.Length == 0)
             {
                 untrimmedLine = sr.ReadLine();
-                if(untrimmedLine != null)
+                if (untrimmedLine != null)
                 {
                     contentLine = untrimmedLine.Trim();
 
@@ -117,7 +118,7 @@ namespace SpecSharer.Logic
             SyntaxTree tree = CSharpSyntaxTree.ParseText(csFileContent);
             CompilationUnitSyntax root = tree.GetCompilationUnitRoot();
 
-            if(root.Members.Count == 0)
+            if (root.Members.Count == 0)
             {
                 return;
             }

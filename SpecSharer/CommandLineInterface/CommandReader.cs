@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SpecSharer.Data;
+using SpecSharer.Logic;
 using SpecSharer.Storage;
 using System;
 using System.Collections.Generic;
@@ -35,16 +36,16 @@ namespace SpecSharer.CommandLineInterface
             "retrieve"
         };
 
-        public CommandReader(IGithubManager manager, IConsole console) 
+        public CommandReader(IGithubManager manager, IConsole console, IMethodReader reader) 
         {
-            controller = new CommandLineInterfaceController(manager, console);
+            controller = new CommandLineInterfaceController(manager, console, reader);
             this.console = console;
         }
 
         public CommandReader()
         {
             console = new ConsoleWrapper();
-            controller = new CommandLineInterfaceController(new GithubManager(), console);
+            controller = new CommandLineInterfaceController(new GithubManager(), console, new MethodReader());
         }
 
         internal List<string> ValidateArgs(Dictionary<string, string>.KeyCollection keys)
