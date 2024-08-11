@@ -42,12 +42,6 @@ namespace SpecSharer.CommandLineInterface
             this.console = console;
         }
 
-        public CommandReader()
-        {
-            console = new ConsoleWrapper();
-            controller = new CommandLineInterfaceController(new GithubManager(), console, new MethodReader());
-        }
-
         internal List<string> ValidateArgs(Dictionary<string, string>.KeyCollection keys)
         {
             List<string> invalidKeys = new();

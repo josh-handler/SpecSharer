@@ -1,11 +1,13 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using SpecSharer.CommandLineInterface;
-
+using SpecSharer.Data;
+using SpecSharer.Logic;
+using System;
 Console.WriteLine("Welcome To SpecSharer!");
 
-CommandReader commandReader = new();
+CommandReader commandReader = new(new GithubManager(), new ConsoleWrapper(), new MethodReader());
 
-Dictionary<string, string> argDict = new();
+Dictionary<string, string> argDict = [];
 
 if (args.Length == 0)
 {
