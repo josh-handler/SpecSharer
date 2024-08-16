@@ -1,1 +1,13 @@
-﻿Text Already Present In File
+﻿namespace SpecSharerTests.Resources
+{
+    public class ExistingTargetFile
+    {
+
+        [Then(@"a target Exists")]
+        public void Target(string input)
+        {
+            //Existing Comment
+            Console.WriteLine("Simple Method");
+        }
+    }
+}

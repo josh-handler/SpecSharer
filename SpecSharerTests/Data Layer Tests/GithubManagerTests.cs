@@ -90,7 +90,7 @@ namespace SpecSharerTests.Data_Layer_Tests
         [Fact]
         public async void UpdateEmptyFileTest()
         {
-            string expectedOutput = "namespace SpecSharer.TestData\r\n{\r\n    public class TestBindingsFile\r\n    {\r\n\r\n[Given(@\"there is a binding\")]\r\n\tpublic void Binding(string input)\r\n\t{\r\n            //Example Comment\r\n            Console.WriteLine(\"Example binding\");\r\n        }    }\r\n}";
+            string expectedOutput = $"namespace SpecSharer.TestData{Environment.NewLine}{{{Environment.NewLine}    public class TestBindingsFile{Environment.NewLine}    {{{Environment.NewLine}{Environment.NewLine}[Given(@\"there is a binding\")]{Environment.NewLine}\tpublic void Binding(string input){Environment.NewLine}\t{{{Environment.NewLine}            //Example Comment{Environment.NewLine}            Console.WriteLine(\"Example binding\");{Environment.NewLine}        }}    }}{Environment.NewLine}}}";
 
             await SetFileContent(githubDynamicTestFilePath, "");
 
@@ -112,7 +112,7 @@ namespace SpecSharerTests.Data_Layer_Tests
         [Fact]
         public async void UpdateUnchangedFileTest()
         {
-            string expectedOutput = "namespace SpecSharer.TestData\r\n{\r\n    public class TestBindingsFile\r\n    {\r\n\r\n[Given(@\"there is a binding\")]\r\n\tpublic void Binding(string input)\r\n\t{\r\n            //Example Comment\r\n            Console.WriteLine(\"Example binding\");\r\n        }\r\n\r\n    }\r\n}";
+            string expectedOutput = $"namespace SpecSharer.TestData{Environment.NewLine}{{{Environment.NewLine}    public class TestBindingsFile{Environment.NewLine}    {{{Environment.NewLine}{Environment.NewLine}[Given(@\"there is a binding\")]{Environment.NewLine}\tpublic void Binding(string input){Environment.NewLine}\t{{{Environment.NewLine}            //Example Comment{Environment.NewLine}            Console.WriteLine(\"Example binding\");{Environment.NewLine}        }}{Environment.NewLine}{Environment.NewLine}    }}{Environment.NewLine}}}";
 
             await SetFileContent(githubDynamicTestFilePath, expectedOutput);
 
@@ -134,9 +134,9 @@ namespace SpecSharerTests.Data_Layer_Tests
         [Fact]
         public async void UpdateChangedFileTest()
         {
-            string startingState = "namespace SpecSharer.TestData\r\n{\r\n    public class TestBindingsFile\r\n    {\r\n\r\n[Given(@\"there is the binding\")]\r\n\tpublic void Binding(string input)\r\n\t{\r\n            //An Example Comment\r\n            Console.Write(\"Example binding\");\r\n        }\r\n\r\n    }\r\n}";
+            string startingState = $"namespace SpecSharer.TestData{Environment.NewLine}{{{Environment.NewLine}    public class TestBindingsFile{Environment.NewLine}    {{{Environment.NewLine}{Environment.NewLine}[Given(@\"there is the binding\")]{Environment.NewLine}\tpublic void Binding(string input){Environment.NewLine}\t{{{Environment.NewLine}            //An Example Comment{Environment.NewLine}            Console.Write(\"Example binding\");{Environment.NewLine}        }}{Environment.NewLine}{Environment.NewLine}    }}{Environment.NewLine}}}";
 
-            string expectedOutput = "namespace SpecSharer.TestData\r\n{\r\n    public class TestBindingsFile\r\n    {\r\n\r\n[Given(@\"there is a binding\")]\r\n\tpublic void Binding(string input)\r\n\t{\r\n            //Example Comment\r\n            Console.WriteLine(\"Example binding\");\r\n        }\r\n\r\n    }\r\n}";
+            string expectedOutput = $"namespace SpecSharer.TestData{Environment.NewLine}{{{Environment.NewLine}    public class TestBindingsFile{Environment.NewLine}    {{{Environment.NewLine}{Environment.NewLine}[Given(@\"there is a binding\")]{Environment.NewLine}\tpublic void Binding(string input){Environment.NewLine}\t{{{Environment.NewLine}            //Example Comment{Environment.NewLine}            Console.WriteLine(\"Example binding\");{Environment.NewLine}        }}{Environment.NewLine}{Environment.NewLine}    }}{Environment.NewLine}}}";
 
             await SetFileContent(githubDynamicTestFilePath, startingState);
 
@@ -159,7 +159,7 @@ namespace SpecSharerTests.Data_Layer_Tests
         [Fact]
         public async void UpdateNotExistingFileTest()
         {
-            string expectedOutput = "namespace SpecSharer.TestData\r\n{\r\n    public class CreatedEachTestUseFile\r\n    {\r\n\r\n[Given(@\"there is a binding\")]\r\n\tpublic void Binding(string input)\r\n\t{\r\n            //Example Comment\r\n            Console.WriteLine(\"Example binding\");\r\n        }    }\r\n}";
+            string expectedOutput = $"namespace SpecSharer.TestData{Environment.NewLine}{{{Environment.NewLine}    public class CreatedEachTestUseFile{Environment.NewLine}    {{{Environment.NewLine}{Environment.NewLine}[Given(@\"there is a binding\")]{Environment.NewLine}\tpublic void Binding(string input){Environment.NewLine}\t{{{Environment.NewLine}            //Example Comment{Environment.NewLine}            Console.WriteLine(\"Example binding\");{Environment.NewLine}        }}    }}{Environment.NewLine}}}";
 
             await DeleteFile(githubDeletedTestFilePath);
 

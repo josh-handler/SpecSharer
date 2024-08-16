@@ -184,8 +184,11 @@ namespace SpecSharerTests
             File.Delete(newCliTestTargetFilePath);
 
             string expectedConsoleString = $"Bindings have been succesfully stored on your local machine{Environment.NewLine}";
-            string expectedFileString = $"[Given(@\"there is a binding\")]{Environment.NewLine}\tpublic void Binding(string input){Environment.NewLine}\t{{{Environment.NewLine}            //Example Comment{Environment.NewLine}            Console.WriteLine(\"Example binding\");{Environment.NewLine}        }}";
+
             BindingsFileData data = controller.ProcessFileAtPath(singleBindingFilePath);
+
+            string expectedFileString = $"namespace SpecSharerLocalStorage{Environment.NewLine}{{{Environment.NewLine}    public class CliTargetFile{Environment.NewLine}    {{{Environment.NewLine}{Environment.NewLine}{data.ConvertToString()}    }}{Environment.NewLine}}}";
+
             controller.ExtractedBindings = data;
             controller.StoreExtractedBindingsLocally(newCliTestTargetFilePath);
 
@@ -244,17 +247,24 @@ namespace SpecSharerTests
         public void StoreRetrievedBindingsTest() 
         {
             string expectedConsoleString = $"Bindings have been succesfully stored on your local machine{Environment.NewLine}";
-            string expectedFileString = $"[Given(@\"there is a first binding\")]{Environment.NewLine}\tpublic void FirstBinding(){Environment.NewLine}\t{{{Environment.NewLine}            //Example Comment{Environment.NewLine}            Console.WriteLine(\"Example binding\");{Environment.NewLine}        }}{Environment.NewLine}{Environment.NewLine}[When(@\"there is an input of '(.*)'\")]{Environment.NewLine}\tpublic bool SingleInputBinding(string input){Environment.NewLine}\t{{{Environment.NewLine}            //Comment{Environment.NewLine}            Console.WriteLine($\"Binding has input of {{input}}\");{Environment.NewLine}            return true;{Environment.NewLine}        }}{Environment.NewLine}{Environment.NewLine}[Then(@\"there are multiple inputs of '(*.)', '(a|b|c)', '(dddd)'\")]{Environment.NewLine}[When(@\"there are inputs of '(*.)', '(a|b|c)', '(dddd)'\")]{Environment.NewLine}\tpublic void MultiInputBinding(string stringInput, char charInput, int intInput){Environment.NewLine}\t{{{Environment.NewLine}            //Another Comment{Environment.NewLine}            Console.WriteLine($\"Inputs were string {{stringInput}}, char {{charInput}} and int {{intInput}}\");{Environment.NewLine}        }}{Environment.NewLine}{Environment.NewLine}[Given(@\"there is a binding\")]{Environment.NewLine}\tpublic void Binding(string input){Environment.NewLine}\t{{{Environment.NewLine}            //Example Comment{Environment.NewLine}            Console.WriteLine(\"Example binding\");{Environment.NewLine}        }}";
+            string expectedFileString = $"namespace SpecSharerLocalStorage\r\n{{\r\n    public class CliTargetFile\r\n    {{\r\n\r\n[Given(@\"there is a first binding\")]{Environment.NewLine}\tpublic void FirstBinding(){Environment.NewLine}\t{{{Environment.NewLine}            //Example Comment{Environment.NewLine}            Console.WriteLine(\"Example binding\");{Environment.NewLine}        }}{Environment.NewLine}{Environment.NewLine}[When(@\"there is an input of '(.*)'\")]{Environment.NewLine}\tpublic bool SingleInputBinding(string input){Environment.NewLine}\t{{{Environment.NewLine}            //Comment{Environment.NewLine}            Console.WriteLine($\"Binding has input of {{input}}\");{Environment.NewLine}            return true;{Environment.NewLine}        }}{Environment.NewLine}{Environment.NewLine}[Then(@\"there are multiple inputs of '(*.)', '(a|b|c)', '(dddd)'\")]{Environment.NewLine}[When(@\"there are inputs of '(*.)', '(a|b|c)', '(dddd)'\")]{Environment.NewLine}\tpublic void MultiInputBinding(string stringInput, char charInput, int intInput){Environment.NewLine}\t{{{Environment.NewLine}            //Another Comment{Environment.NewLine}            Console.WriteLine($\"Inputs were string {{stringInput}}, char {{charInput}} and int {{intInput}}\");{Environment.NewLine}        }}{Environment.NewLine}{Environment.NewLine}[Given(@\"there is a binding\")]{Environment.NewLine}\tpublic void Binding(string input){Environment.NewLine}\t{{{Environment.NewLine}            //Example Comment{Environment.NewLine}            Console.WriteLine(\"Example binding\");{Environment.NewLine}        }}    }}\r\n}}";
+
+            File.Delete(newCliTestTargetFilePath);
 
             List<BindingsFileData> data = [];
             data.Add(controller.ProcessFileAtPath(multiBindingFilePath));
             data.Add(controller.ProcessFileAtPath(singleBindingFilePath));
             controller.RetreivedBindings = data;
+
+            Assert.False(File.Exists(newCliTestTargetFilePath));
+
             controller.StoreRetrievedBindingsLocally(newCliTestTargetFilePath);
 
             string result = File.ReadAllText(newCliTestTargetFilePath);
 
             File.Delete(newCliTestTargetFilePath);
+
+            testOutputHelper.WriteLine(result);
 
             Assert.Equal(expectedConsoleString, console.GetConsoleOutput());
             Assert.Equal(expectedFileString, result);

@@ -164,7 +164,7 @@ namespace SpecSharer.CommandLineInterface
         public void StoreExtractedBindingsLocally(string target)
         {
             storer = new FileStorer();
-            storer.StoreBindings(target, ExtractedBindings, false);
+            storer.StoreBindings(target, ExtractedBindings, false, reader);
             console.WriteLine("Bindings have been succesfully stored on your local machine");
         }
 
@@ -230,8 +230,9 @@ namespace SpecSharer.CommandLineInterface
 
             foreach (BindingsFileData bindings in RetreivedBindings)
             {
-                storer.StoreBindings(target, bindings, false);
+                storer.StoreBindings(target, bindings, false, reader);
             }
+
             console.WriteLine("Bindings have been succesfully stored on your local machine");
         }
     }

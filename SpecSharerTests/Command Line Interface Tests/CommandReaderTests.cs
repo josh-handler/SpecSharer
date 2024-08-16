@@ -118,14 +118,15 @@ namespace SpecSharerTests.Command_Line_Interface_Tests
         [Fact]
         public async void InterpretValidExtractAndLocalPathCommands()
         {
-            if(File.Exists(commandReaderNewFilePath))
+
+            if (File.Exists(commandReaderNewFilePath))
             {
                 File.Delete(commandReaderNewFilePath);
             }
 
             MethodReader methodReader = new MethodReader();
             methodReader.SetFilePath(multiBindingFilePath);
-            string expected = methodReader.ProcessBindingsFile().ConvertToString();
+            string expected = $"namespace SpecSharerLocalStorage{Environment.NewLine}{{{Environment.NewLine}    public class CommandReaderNewFile{Environment.NewLine}    {{{Environment.NewLine}{Environment.NewLine}{methodReader.ProcessBindingsFile().ConvertToString()}    }}{Environment.NewLine}}}";
 
             await reader.Interpret(extractToLocalFileArgDict);
             Assert.Equal(expected, File.ReadAllText(commandReaderNewFilePath));
@@ -138,7 +139,7 @@ namespace SpecSharerTests.Command_Line_Interface_Tests
         public async void InterpretValidExtractAndGithubPathCommands()
         {
             //New file CommandReaderEditFile or similar
-            string expected = "namespace SpecSharer.Data\r\n{\r\n    public class BindingsFile\r\n    {\r\n\r\n[Given(@\"there is a binding\")]\r\n\tpublic void Binding(string input)\r\n\t{\r\n            //Example Comment\r\n            Console.WriteLine(\"Example binding\");\r\n        }    }\r\n}";
+            string expected = $"namespace SpecSharer.Data{Environment.NewLine}{{{Environment.NewLine}    public class BindingsFile{Environment.NewLine}    {{{Environment.NewLine}{Environment.NewLine}[Given(@\"there is a binding\")]{Environment.NewLine}\tpublic void Binding(string input){Environment.NewLine}\t{{{Environment.NewLine}            //Example Comment{Environment.NewLine}            Console.WriteLine(\"Example binding\");{Environment.NewLine}        }}    }}{Environment.NewLine}}}";
 
             File.WriteAllText(commandReaderTargetFile, "namespace SpecSharer.Data{public class BindingsFile{}}/nTemporarily removed for testing");
 

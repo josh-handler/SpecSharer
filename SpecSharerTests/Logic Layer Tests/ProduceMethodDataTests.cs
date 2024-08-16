@@ -43,7 +43,7 @@ namespace SpecSharerTests
             Assert.Equal("public void ", methods.Single().Modifiers);
             Assert.Equal("string input", methods.Single().Parameters.Single());
             Assert.Equal("[Given(@\"there is a binding\")]", methods.Single().Bindings.Single());
-            Assert.Equal("public void Binding(string input)", methods.Single().getMethodLine());
+            Assert.Equal("public void Binding(string input)", methods.Single().GetMethodLine());
         }
 
         [Fact]
@@ -93,9 +93,9 @@ namespace SpecSharerTests
             Assert.Equal("[Then(@\"there are multiple inputs of '(*.)', '(a|b|c)', '(dddd)'\")]", methods[2].Bindings[0]);
             Assert.Equal("[When(@\"there are inputs of '(*.)', '(a|b|c)', '(dddd)'\")]", methods[2].Bindings[1]);
 
-            Assert.Equal("public void FirstBinding()", methods[0].getMethodLine());
-            Assert.Equal("public bool SingleInputBinding(string input)", methods[1].getMethodLine());
-            Assert.Equal("public void MultiInputBinding(string stringInput, char charInput, int intInput)", methods[2].getMethodLine());
+            Assert.Equal("public void FirstBinding()", methods[0].GetMethodLine());
+            Assert.Equal("public bool SingleInputBinding(string input)", methods[1].GetMethodLine());
+            Assert.Equal("public void MultiInputBinding(string stringInput, char charInput, int intInput)", methods[2].GetMethodLine());
         }
 
         [Fact]

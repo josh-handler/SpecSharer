@@ -4,6 +4,6 @@ namespace SpecSharer.Storage
 {
     internal interface IFileStorer
     {
-        void StoreBindings(string path, BindingsFileData data, bool overwrite);
+        void StoreBindings(string path, BindingsFileData data, bool overwrite, IMethodReader reader);
     }
 }

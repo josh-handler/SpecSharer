@@ -60,11 +60,11 @@ namespace SpecSharer.Data
 
         private async Task<RepositoryContentChangeSet> CreateFile(BindingsFileData localBindings, string targetFilePath, IReadOnlyList<RepositoryContent> fileDetails)
         {
-            string content = "namespace " + FileNamespace + "\r\n{\r\n    public class " + FileClass + "\r\n    {\r\n\r\n";
+            string content = $"namespace {FileNamespace}{Environment.NewLine}{{{Environment.NewLine}    public class {FileClass}{Environment.NewLine}    {{{Environment.NewLine}{Environment.NewLine}";
 
             content += localBindings.ConvertToString();
 
-            content += "    }\r\n}";
+            content += $"    }}{Environment.NewLine}}}";
             RepositoryContentChangeSet createResult = await github.Repository.Content.CreateFile(owner, repoName, targetFilePath, new CreateFileRequest($"Creating File at size {content.Length}", content));
 
             return createResult;
@@ -75,11 +75,11 @@ namespace SpecSharer.Data
             MethodReader reader = new MethodReader();
             BindingsFileData githubBindings = reader.ProcessBindingsFileFromRepository(fileDetails[0]);
 
-            string content = "namespace " + FileNamespace + "\r\n{\r\n    public class " + FileClass + "\r\n    {\r\n\r\n";
+            string content = $"namespace {FileNamespace}{Environment.NewLine}{{{Environment.NewLine}    public class {FileClass}{Environment.NewLine}    {{{Environment.NewLine}{Environment.NewLine}";
 
             content += CompareBindingsAndUpdateContent(localBindings, githubBindings);
 
-            content += "    }\r\n}";
+            content += $"    }}{Environment.NewLine}}}";
 
             RepositoryContentChangeSet updateResult = await github.Repository.Content.UpdateFile(owner, repoName, targetFilePath,
                 new UpdateFileRequest($"Update File to size {content.Length} ", content, fileDetails[0].Sha));
@@ -94,7 +94,7 @@ namespace SpecSharer.Data
             string content = githubBindings.ConvertToString();
             if(content.Length != 0)
             {
-                content += $"\r\n\r\n";
+                content += $"{Environment.NewLine}{Environment.NewLine}";
             }
             
             content += localBindings.ConvertToString();

@@ -24,7 +24,7 @@ namespace SpecSharer.Logic
         public string Name { get => name; set => name = value; }
         public List<string> Bindings { get => bindings; set => bindings = value; }
 
-        public string getMethodLine()
+        public string GetMethodLine()
         {
 
             string parametersString = "";

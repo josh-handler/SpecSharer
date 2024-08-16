@@ -85,6 +85,18 @@ namespace SpecSharer.Logic
             return result;
         }
 
+        public void AddMethodData(List<MethodData> data)
+        {
+            for (int i = 0; i < data.Count; i++)
+            {
+                Methods.Add(data[i].Name);
+                Bodies.Add(data[i].Name, data[i].Body);
+                Modifiers.Add(data[i].Name, data[i].Modifiers);
+                Parameters.Add(data[i].Name, data[i].Parameters);
+                Bindings.Add(data[i].GetMethodLine(), data[i].Bindings);
+            }
+        }
+
         public string ConvertToString()
         {
             StringBuilder sb = new StringBuilder();
@@ -104,7 +116,7 @@ namespace SpecSharer.Logic
                     sb.AppendLine(bindings);
                 }
 
-                sb.AppendLine($"\t{method.getMethodLine()}");
+                sb.AppendLine($"\t{method.GetMethodLine()}");
                 sb.Append($"\t{method.Body}");
             }
 

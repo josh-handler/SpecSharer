@@ -27,8 +27,16 @@ namespace SpecSharer.Logic
 
         public BindingsFileData ProcessBindingsFile()
         {
-            string csFileContent = File.ReadAllText(filePath);
-            BindingsFileData data = ProcessString(csFileContent);
+            BindingsFileData data;
+            try
+            {
+                string csFileContent = File.ReadAllText(filePath);
+                data = ProcessString(csFileContent);
+            }
+            catch (InvalidCastException ex)
+            {
+                throw new InvalidCastException(message: "The indicated file is not a valid C# file.", ex);
+            }
             return data;
         }
 
